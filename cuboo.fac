@@ -1,0 +1,64 @@
+from spike import PrimeHub, Motor, MotorPair, ColorSensor, DistanceSensor
+from spike.control import wait_for_seconds
+
+# Inicializa o hub e os motores
+hub = PrimeHub()
+motor_pequeno1 = Motor('A')
+motor_pequeno2 = Motor('B')
+motor_grande = Motor('C')
+sensor_cor = ColorSensor('F')
+sensor_ultrassonico = DistanceSensor('E')
+
+# Função para girar uma camada do cubo
+def girar_camada(motor, graus):
+    motor.run_for_degrees(graus, speed=50)
+    wait_for_seconds(0.5)
+
+# Função para ler uma face do cubo
+def ler_face():
+    cores = []
+    for i in range(9):
+        cor = sensor_cor.get_color()
+        if cor == 'red':
+            cores.append('R')
+        elif cor == 'green':
+            cores.append('G')
+        elif cor == 'blue':
+            cores.append('B')
+        elif cor == 'yellow':
+            cores.append('Y')
+        elif cor == 'white':
+            cores.append('W')
+        elif cor == 'orange':
+            cores.append('O')
+        wait_for_seconds(0.2)
+    return cores
+
+# Função para resolver o cubo
+def resolver_cubo():
+    # Aqui você pode implementar um algoritmo de resolução de cubo mágico
+    girar_camada(motor_pequeno1, 90)
+    girar_camada(motor_pequeno2, -90)
+    motor_grande.run_for_degrees(180, speed=50)  # Gira o cubo para outra face
+    wait_for_seconds(0.5)
+
+# Função principal
+def main():
+    hub.speaker.beep()
+
+    # Ler todas as faces do cubo
+    faces = []
+    for _ in range(6):
+        face = ler_face()
+        faces.append(face)
+        motor_grande.run_for_degrees(90, speed=50)  # Gira o cubo para a próxima face
+        wait_for_seconds(0.5)
+
+    print("Cores do cubo lidas:", faces)
+
+    # Resolver o cubo
+    resolver_cubo()
+
+if __name__ == "__main__":
+    main()
+    
